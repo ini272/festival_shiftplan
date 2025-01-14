@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import crew, shifts, plans, assignments, areas
+from app.api.routes import crew, shifts, plans, assignments
 from app.core.database import engine
 from app.models import models
 
