@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import crew, shifts, plans, assignments
+from app.api.routes import crew, shifts, plans, assignments, areas
 from app.core.database import engine
 from app.models import models
 
@@ -23,3 +23,4 @@ app.include_router(crew.router, prefix="/crew", tags=["crew"])
 app.include_router(shifts.router, prefix="/shifts", tags=["shifts"])
 app.include_router(plans.router, prefix="/plans", tags=["plans"])
 app.include_router(assignments.router, prefix="/assignments", tags=["assignments"])
+app.include_router(areas.router, prefix="/areas", tags=["areas"])

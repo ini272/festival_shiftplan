@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ShiftPlanList from '../components/ShiftPlanList.vue'
 import CrewAssignments from '../components/CrewAssignments.vue'
+import CrewAvailability from '@/components/CrewAvailability.vue'
 
 const routes = [
   {
@@ -13,6 +14,12 @@ const routes = [
     name: 'crew',
     component: CrewAssignments
   },
+  {
+    path: '/availability/:crewId',
+    name: 'availability',
+    component: CrewAvailability,
+    props: true
+  },  
   // Add a catch-all redirect to home
   {
     path: '/:pathMatch(.*)*',

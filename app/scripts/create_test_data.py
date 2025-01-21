@@ -20,32 +20,25 @@ def create_test_data():
     db.flush()
     
     # Create Areas
-    areas = [
-        Area(name="Weinzelt", shift_plan_id=plan.id),
-        Area(name="Bierwagen", shift_plan_id=plan.id)
-    ]
-    for area in areas:
-        db.add(area)
+    weinzelt = Area(name="Weinzelt", shift_plan_id=plan.id)
+    bierwagen = Area(name="Bierwagen", shift_plan_id=plan.id)
+    db.add(weinzelt)
+    db.add(bierwagen)
     db.flush()
     
     # Create Groups
-    groups = [
-        CrewGroup(name="Night Owls"),
-        CrewGroup(name="Early Birds")
-    ]
-    for group in groups:
-        db.add(group)
+    night_owls = CrewGroup(name="Night Owls")
+    early_birds = CrewGroup(name="Early Birds")
+    db.add(night_owls)
+    db.add(early_birds)
     db.flush()
     
     # Create Crew Members
     crew_members = [
-        # Night Owls
-        CrewMember(name="Yannick", role=Role.CREW, group_id=groups[0].id),
-        CrewMember(name="Chrissi", role=Role.CREW, group_id=groups[0].id),
-        # Early Birds
-        CrewMember(name="Benito", role=Role.CREW, group_id=groups[1].id),
-        CrewMember(name="Johannes", role=Role.CREW, group_id=groups[1].id),
-        # Solo Members
+        CrewMember(name="Yannick", role=Role.CREW, group_id=night_owls.id),
+        CrewMember(name="Chrissi", role=Role.CREW, group_id=night_owls.id),
+        CrewMember(name="Benito", role=Role.CREW, group_id=early_birds.id),
+        CrewMember(name="Johannes", role=Role.CREW, group_id=early_birds.id),
         CrewMember(name="Franzi", role=Role.CREW),
         CrewMember(name="David", role=Role.CREW),
         CrewMember(name="Martina", role=Role.COORDINATOR)
@@ -61,39 +54,53 @@ def create_test_data():
     for day in range(5):  # 06.08 - 10.08
         current_date = start_date + timedelta(days=day)
         
-        # Morning shifts for both areas
-        for area in areas:
-            shifts.append(Shift(
-                start_time=datetime.combine(current_date, datetime.strptime("10:00", "%H:%M").time()),
-                end_time=datetime.combine(current_date, datetime.strptime("16:00", "%H:%M").time()),
-                capacity=2,
-                shift_plan_id=plan.id,
-                area_id=area.id
-            ))
+        # Morning shift (10-12) - Weinzelt only
+        shifts.append(Shift(
+            start_time=datetime.combine(current_date, datetime.strptime("10:00", "%H:%M").time()),
+            end_time=datetime.combine(current_date, datetime.strptime("12:00", "%H:%M").time()),
+            capacity=2,
+            shift_plan_id=plan.id,
+            area_id=weinzelt.id
+        ))
         
-        # Evening shifts for both areas
-        for area in areas:
-            shifts.append(Shift(
-                start_time=datetime.combine(current_date, datetime.strptime("16:00", "%H:%M").time()),
-                end_time=datetime.combine(current_date, datetime.strptime("22:00", "%H:%M").time()),
-                capacity=3,
-                shift_plan_id=plan.id,
-                area_id=area.id
-            ))
+        # Mid-day shifts (12-20) - Both areas
+        for hour in [12, 14, 16, 18]:
+            for area in [weinzelt, bierwagen]:
+                shifts.append(Shift(
+                    start_time=datetime.combine(current_date, datetime.strptime(f"{hour}:00", "%H:%M").time()),
+                    end_time=datetime.combine(current_date, datetime.strptime(f"{hour+2}:00", "%H:%M").time()),
+                    capacity=3,
+                    shift_plan_id=plan.id,
+                    area_id=area.id
+                ))
+        
+        # Evening shift (20-22) - Bierwagen only
+        shifts.append(Shift(
+            start_time=datetime.combine(current_date, datetime.strptime("20:00", "%H:%M").time()),
+            end_time=datetime.combine(current_date, datetime.strptime("22:00", "%H:%M").time()),
+            capacity=3,
+            shift_plan_id=plan.id,
+            area_id=bierwagen.id
+        ))
     
     for shift in shifts:
         db.add(shift)
     db.flush()
     
-    # Create some assignments
+    # Create assignments
     assignments = [
-        # Assign Early Birds to morning shifts
+        # Early Birds morning shifts
         ShiftAssignment(shift_id=shifts[0].id, crew_member_id=crew_members[2].id),
         ShiftAssignment(shift_id=shifts[0].id, crew_member_id=crew_members[3].id),
         
-        # Assign Night Owls to evening shifts
-        ShiftAssignment(shift_id=shifts[1].id, crew_member_id=crew_members[0].id),
-        ShiftAssignment(shift_id=shifts[1].id, crew_member_id=crew_members[1].id),
+        # Night Owls evening shifts
+        ShiftAssignment(shift_id=shifts[-1].id, crew_member_id=crew_members[0].id),
+        ShiftAssignment(shift_id=shifts[-1].id, crew_member_id=crew_members[1].id),
+        
+        # Mixed afternoon shifts
+        ShiftAssignment(shift_id=shifts[5].id, crew_member_id=crew_members[4].id),
+        ShiftAssignment(shift_id=shifts[6].id, crew_member_id=crew_members[5].id),
+        ShiftAssignment(shift_id=shifts[7].id, crew_member_id=crew_members[6].id),
     ]
     
     for assignment in assignments:

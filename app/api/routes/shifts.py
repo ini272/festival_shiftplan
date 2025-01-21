@@ -9,7 +9,8 @@ from app.crud.crud import get_all, get_by_id, create_item, update_item, delete_i
 router = APIRouter()
 
 @router.get("/", response_model=List[ShiftSchema])
-def read_shifts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+#TODO fix limit with proper pagination
+def read_shifts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return get_all(Shift, skip, limit, db)
 
 @router.post("/", response_model=ShiftSchema)

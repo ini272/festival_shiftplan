@@ -12,6 +12,10 @@
         <span class="icon">👥</span>
         <span class="text" v-show="!isCollapsed">Crew Assignments</span>
       </router-link>
+      <router-link to="/availability/1">
+        <span class="icon">🎯</span>
+        <span class="text" v-show="!isCollapsed">My Availability</span>
+      </router-link>
     </nav>
   </div>
 </template>

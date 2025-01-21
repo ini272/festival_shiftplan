@@ -31,6 +31,15 @@ class ShiftAssignment(Base):
     shift = relationship("Shift", back_populates="assignments")
     crew_member = relationship("CrewMember", back_populates="assignments")
 
+class Area(Base):
+    __tablename__ = "areas"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    shift_plan_id = Column(Integer, ForeignKey("shift_plans.id"))
+    
+    shift_plan = relationship("ShiftPlan", back_populates="areas")
+    shifts = relationship("Shift", back_populates="area")
+
 class Shift(Base):
     __tablename__ = "shifts"
     id = Column(Integer, primary_key=True, index=True)
@@ -38,11 +47,13 @@ class Shift(Base):
     end_time = Column(DateTime, nullable=False)
     capacity = Column(Integer, default=1)
     shift_plan_id = Column(Integer, ForeignKey("shift_plans.id"))
+    area_id = Column(Integer, ForeignKey("areas.id"))
 
     assignments = relationship("ShiftAssignment", back_populates="shift")
     shift_plan = relationship("ShiftPlan", back_populates="shifts")
     crew_preferences = relationship("CrewMemberPreference", back_populates="shift")
     group_preferences = relationship("GroupPreference", back_populates="shift")
+    area = relationship("Area", back_populates="shifts")
 
 class ShiftPlan(Base):
     __tablename__ = "shift_plans"
@@ -52,6 +63,7 @@ class ShiftPlan(Base):
     max_group_size = Column(Integer, default=3)
     
     shifts = relationship("Shift", back_populates="shift_plan")
+    areas = relationship("Area", back_populates="shift_plan")
 
 class CrewMemberPreference(Base):
     __tablename__ = "crew_member_preferences"

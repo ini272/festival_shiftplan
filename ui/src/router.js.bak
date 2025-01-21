@@ -1,0 +1,15 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import ShiftPlanList from './components/ShiftPlanList.vue'
+import CrewAvailability from './components/CrewAvailability.vue'
+
+const routes = [
+  { path: '/', component: ShiftPlanList },
+  { path: '/availability/:crewId', component: CrewAvailability, props: true }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
